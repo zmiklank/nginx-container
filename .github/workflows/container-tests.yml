@@ -44,3 +44,4 @@ jobs:
           pull_request_status_name: "${{ matrix.context }} - ${{ matrix.version }}"
           variables: "REPO_URL=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY;REPO_NAME=$GITHUB_REPOSITORY;PR_NUMBER=${{ github.event.issue.number }};SINGLE_VERSION=${{ matrix.version }};OS=${{ matrix.os_test }};TEST_NAME=test"
           compose: ${{ matrix.compose }}
+          pr_head_sha: "salalalalala"
