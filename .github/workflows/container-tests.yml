@@ -2,14 +2,13 @@ on:
   push
 jobs:
   container-tests:
-    # This job only runs for '[test]' pull request comments by owner, member
     runs-on: ubuntu-20.04
     name: "Container tests: ${{ matrix.version }} - ${{ matrix.context }}"
     strategy:
       fail-fast: false
       matrix:
         version: [ "1.18", "1.20", "1.22" ]
-        os_test: [ "fedora", "centos7", "rhel7", "rhel8", "rhel9", "c9s"]
+        os_test: [ "fedora", "centos7", "c9s"]
         include:
           - tmt_plan: "fedora"
             os_test: "fedora"
@@ -25,38 +24,6 @@ jobs:
             api_key: "TF_PUBLIC_API_KEY"
             branch: "main"
             tmt_repo: "https://github.com/sclorg/sclorg-testing-farm"
-          - tmt_plan: "rhel7-docker"
-            os_test: "rhel7"
-            context: "RHEL7"
-            compose: "RHEL-7.9-Released"
-            api_key: "TF_INTERNAL_API_KEY"
-            branch: "master"
-            tmt_repo: "https://gitlab.cee.redhat.com/platform-eng-core-services/sclorg-tmt-plans"
-            tf_scope: "private"
-          - tmt_plan: "rhel8-docker"
-            os_test: "rhel8"
-            context: "RHEL8"
-            compose: "RHEL-8.6.0-Nightly"
-            api_key: "TF_INTERNAL_API_KEY"
-            branch: "master"
-            tmt_repo: "https://gitlab.cee.redhat.com/platform-eng-core-services/sclorg-tmt-plans"
-            tf_scope: "private"
-          - tmt_plan: "rhel9-docker"
-            os_test: "rhel9"
-            context: "RHEL9"
-            compose: "RHEL-9.0.0-Nightly"
-            api_key: "TF_INTERNAL_API_KEY"
-            branch: "master"
-            tmt_repo: "https://gitlab.cee.redhat.com/platform-eng-core-services/sclorg-tmt-plans"
-            tf_scope: "private"
-          - tmt_plan: "rhel9-unsubscribed-docker"
-            os_test: "rhel9"
-            context: "RHEL9 - Unsubscribed host"
-            compose: "RHEL-9.0.0-Nightly"
-            api_key: "TF_INTERNAL_API_KEY"
-            branch: "master"
-            tmt_repo: "https://gitlab.cee.redhat.com/platform-eng-core-services/sclorg-tmt-plans"
-            tf_scope: "private"
           - tmt_plan: "c9s"
             os_test: "c9s"
             context: "CentOS Stream 9"
@@ -66,37 +33,7 @@ jobs:
             tmt_repo: "https://github.com/sclorg/sclorg-testing-farm"
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v2
-        with:
-          ref: "refs/pull/${{ github.event.issue.number }}/head"
-
-      - name: Prepare needed variables
-        shell: bash
-        id: vars
-        run: |
-          dockerfile="Dockerfile.${{ matrix.os_test }}"
-          if [[ ${{ matrix.os_test }} == "centos7" ]]; then
-            dockerfile="Dockerfile"
-          fi
-          echo "::set-output name=DOCKERFILE_NAME::${dockerfile}"
-
-      - name: Check ${{ matrix.version }}/${{ steps.vars.outputs.DOCKERFILE_NAME }} is present
-        id: check_dockerfile
-        uses: andstor/file-existence-action@v1
-        with:
-          files: "${{ matrix.version }}/${{ steps.vars.outputs.DOCKERFILE_NAME }}"
-
-      - name: Check .exclude-${{ matrix.os_test }} file presents
-        id: check_exclude_file
-        uses: andstor/file-existence-action@v1
-        with:
-          files: "${{ matrix.version }}/.exclude-${{ matrix.os_test }}"
-
-      # https://github.com/sclorg/testing-farm-as-github-action
       - name: Schedule tests for ${{ matrix.version }} - ${{ matrix.context }}
-        id: github_action
-        if: ${{ steps.check_exclude_file.outputs.files_exists == 'false' && steps.check_dockerfile.outputs.files_exists == 'true' }}
         uses: zmiklank/testing-farm-as-github-action@exit_on_sha_fail
         with:
           api_key: ${{ secrets[matrix.api_key] }}
