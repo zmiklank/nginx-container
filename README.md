@@ -1,6 +1,7 @@
 Nginx container images
 ======================
 
+
 [![Build and push container images to quay.io registry](https://github.com/sclorg/nginx-container/actions/workflows/build-and-push.yml/badge.svg)](https://github.com/sclorg/nginx-container/actions/workflows/build-and-push.yml)
 
 Images available on Quay are:
