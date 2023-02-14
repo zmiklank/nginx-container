@@ -3,7 +3,7 @@ on:
     types:
       - created
 jobs:
-  openshift-tests:
+  openshift:
     name: "OpenShift tests: ${{ matrix.version }} - ${{ matrix.os_test }}"
     runs-on: ubuntu-20.04
     strategy:
@@ -11,7 +11,12 @@ jobs:
       matrix:
         version: [ "1.20", "1.22", "1.22-micro" ]
         os_test: [ "centos7", "rhel7", "rhel8", "rhel9" ]
-        test_case: [ "openshift" ]
+        test_case: [ "openshift-4" ]
+        include:
+          - os_test: "centos7"
+            test_case: "openshift-3"
+          - os_test: "rhel7"
+            test_case: "openshift-3"
 
     if: |
       github.event.issue.pull_request
@@ -24,5 +29,3 @@ jobs:
           os_test: ${{ matrix.os_test }}
           version: ${{ matrix.version }}
           test_case: ${{ matrix.test_case }}
-          public_api_key: ${{ secrets.TF_PUBLIC_API_KEY }}
-          private_api_key: ${{ secrets.TF_INTERNAL_API_KEY }}
