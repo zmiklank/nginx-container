@@ -23,10 +23,10 @@ jobs:
       && (contains(github.event.comment.body, '[test-openshift]') || contains(github.event.comment.body, '[test-all]'))
       && contains(fromJson('["OWNER", "MEMBER"]'), github.event.comment.author_association)
     steps:
-      - name: Schedule tests for ${{ matrix.version }} - ${{ matrix.os_test }}
-        uses: sclorg/tfaga-wrapper@main
-        secrets: inherit
+      - uses: sclorg/tfaga-wrapper@main
         with:
           os_test: ${{ matrix.os_test }}
           version: ${{ matrix.version }}
           test_case: ${{ matrix.test_case }}
+          public_api_key: ${{ secrets.TF_PUBLIC_API_KEY }}
+          private_api_key: ${{ secrets.TF_INTERNAL_API_KEY }}

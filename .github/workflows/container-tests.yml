@@ -6,7 +6,6 @@ jobs:
   container-tests:
     runs-on: ubuntu-20.04
     name: "Container-tests: ${{ matrix.version }} - ${{ matrix.os_test }}"
-    secrets: inherit
     strategy:
       fail-fast: false
       matrix:
@@ -18,8 +17,11 @@ jobs:
       github.event.issue.pull_request
       && (contains(github.event.comment.body, '[test]') || contains(github.event.comment.body, '[test-all]'))
       && contains(fromJson('["OWNER", "MEMBER"]'), github.event.comment.author_association)
-    uses: sclorg/tfaga-wrapper@inherit_secrets
-    with:
-      os_test: ${{ matrix.os_test }}
-      test_case: ${{ matrix.test_case }}
-      version: ${{ matrix.version }}
+    steps:
+      - uses: sclorg/tfaga-wrapper@inherit_secrets
+        with:
+          os_test: ${{ matrix.os_test }}
+          version: ${{ matrix.version }}
+          test_case: ${{ matrix.test_case }}
+          public_api_key: ${{ secrets.TF_PUBLIC_API_KEY }}
+          private_api_key: ${{ secrets.TF_INTERNAL_API_KEY }}
