@@ -31,5 +31,7 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           commit-message: "add the latest common/ submodule"
+          title: "add the latest common/ submodule"
+          body: "This PR was created automatically because common/ is out of date"
           branch: "update_common"
           delete-branch: true
