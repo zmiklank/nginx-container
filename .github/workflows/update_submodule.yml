@@ -1,0 +1,35 @@
+name: Create PR with updated common/ if needed
+on:
+  push:
+    branches:
+      - add_update_common_action
+  schedule:
+      - cron: '0 1 * * 3'
+jobs:
+  update-submodule:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+         submodules: true
+
+      - name: Check if common is up to date
+        shell: bash
+        id: diff
+        run: |
+          ls; cd common; git checkout master; git pull; cd ..
+          if ! git diff --quiet; then
+            echo "differs=yes" >> $GITHUB_OUTPUT
+          else
+            echo "differs=no" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create PR if needed
+        if: steps.diff.outputs.differs == 'yes'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: "add the latest common/ submodule"
+          branch: "update_common"
+          delete-branch: true
