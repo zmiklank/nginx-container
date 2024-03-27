@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: Build and push to quay.io registry
-        uses: sclorg/build-and-push-action@main
+        uses: zmiklank/build-and-push-action@main
         with:
           registry: "quay.io"
           registry_namespace: ${{ matrix.registry_namespace }}
