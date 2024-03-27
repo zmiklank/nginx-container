@@ -2,7 +2,6 @@ name: Build and push container images to quay.io registry
 on: push
 jobs:
   build-and-push:
-    if: github.repository_owner == 'sclorg'
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
